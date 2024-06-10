@@ -8,8 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # LevelDB configuration
 set(LEVELDB_DIR ${CMAKE_SOURCE_DIR}/third-party/leveldb)
 # Disable tests for levelDB by setting this option before add_subdirectory
-set(LEVELDB_BUILD_TESTS OFF)
-set(LEVELDB_BUILD_BENCHMARKS OFF)
+set(LEVELDB_BUILD_TESTS OFF CACHE BOOL "Build LevelDB tests" FORCE)
+set(LEVELDB_BUILD_BENCHMARKS OFF CACHE BOOL "Build LevelDB benchmarks" FORCE)
+
 # Add LevelDB
 add_subdirectory(${LEVELDB_DIR})
 include_directories(${LEVELDB_DIR}/include)
