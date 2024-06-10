@@ -62,6 +62,39 @@ void writes(leveldb::DB* db) {
     assert(status.ok());
 }
 
+void show_db(leveldb::DB* db) {
+    {
+        for (int i = 0; i < 7; i++) {
+            std::string input = "leveldb.num-files-at-level" + std::to_string(i);
+            std::string output;
+            bool result = db->GetProperty(input, &output);
+            assert(result);
+            std::cout << "leveldb.num-files-at-level" << i << ": " << output << "\n";
+        }
+    }
+
+    {
+        std::string output;
+        bool result = db->GetProperty("leveldb.stats", &output);
+        assert(result);
+        std::cout << output << "\n";
+    }
+
+    {
+        std::string output;
+        bool result = db->GetProperty("leveldb.sstables", &output);
+        assert(result);
+        std::cout << output << "\n";
+    }
+
+    {
+        std::string output;
+        bool result = db->GetProperty("leveldb.approximate-memory-usage", &output);
+        assert(result);
+        std::cout << "leveldb.approximate-memory-usage: " << output << "\n";
+    }
+}
+
 int main() {
     std::string path = "/tmp/leveldb";
 
@@ -73,7 +106,10 @@ int main() {
     assert(status.ok());
 
     // writes(db);
-    read_all(db);
+    // read_all(db);
+    // show_db(db);
+
+    // db->CompactRange(nullptr, nullptr);
 
     delete db;
 
