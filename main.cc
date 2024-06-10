@@ -3,6 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <leveldb/db.h>
+#include <leveldb/dumpfile.h>
 #include <leveldb/options.h>
 #include <leveldb/slice.h>
 #include <leveldb/write_batch.h>
@@ -95,12 +96,28 @@ void show_db(leveldb::DB* db) {
     }
 }
 
+void dump(const std::string& input, const std::string& output_file) {
+    leveldb::Env* env = leveldb::Env::Default();
+    leveldb::WritableFile* file = nullptr;
+    leveldb::Status status = env->NewWritableFile(output_file, &file);
+    assert(status.ok());
+
+    status = leveldb::DumpFile(env, input, file);
+    std::cout << "dump " << input << " to " << output_file << " status: " << status.ToString() << "\n";
+    assert(status.ok());
+    file->Close();
+}
+
 int main() {
     std::string path = "/tmp/leveldb";
 
     leveldb::DB *db;
     leveldb::Options options;
     options.create_if_missing = true;
+
+    // dump("/tmp/leveldb/MANIFEST-000085", "/tmp/leveldb-dump/manifest");
+    // dump("/tmp/leveldb/000057.ldb", "/tmp/leveldb-dump/ldb");
+    // dump("/tmp/leveldb/000086.log", "/tmp/leveldb-dump/wal");
 
     leveldb::Status status = leveldb::DB::Open(options, path, &db);
     assert(status.ok());
