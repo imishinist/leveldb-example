@@ -1,6 +1,7 @@
 #include <cassert>
 #include <cstdint>
 #include <iostream>
+#include <thread>
 #include <vector>
 #include <leveldb/db.h>
 #include <leveldb/dumpfile.h>
@@ -108,6 +109,20 @@ void dump(const std::string& input, const std::string& output_file) {
     file->Close();
 }
 
+void write_to_db(leveldb::DB* db, int thread_id, int num_entries) {
+    leveldb::WriteBatch batch;
+    for (int i = 0; i < num_entries; i++) {
+        std::vector<uint8_t> input;
+
+        write_varint32(input, i + thread_id * 1000);
+        std::string key(input.begin(), input.end());
+        std::string value = std::to_string(i + thread_id * 1000);
+        batch.Put(key, value);
+    }
+    leveldb::Status status = db->Write(leveldb::WriteOptions(), &batch);
+    assert(status.ok());
+}
+
 int main() {
     std::string path = "/tmp/leveldb";
 
@@ -125,6 +140,18 @@ int main() {
     // writes(db);
     // read_all(db);
     // show_db(db);
+
+    int num_thread = 5;
+    int entries_per_thread = 100;
+    std::vector<std::thread> threads(num_thread);
+    for (int i = 0; i < num_thread; i++) {
+        threads.emplace_back(write_to_db, db, i, entries_per_thread);
+    }
+    for (auto& thread : threads) {
+        if (thread.joinable()) {
+            thread.join();
+        }
+    }
 
     // db->CompactRange(nullptr, nullptr);
 
