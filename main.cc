@@ -8,6 +8,8 @@
 #include <leveldb/options.h>
 #include <leveldb/slice.h>
 #include <leveldb/write_batch.h>
+#include <port/port.h>
+#include <port/port_stdcxx.h>
 
 void encode_to_hex(const leveldb::Slice input, std::string& output) {
     output.clear();

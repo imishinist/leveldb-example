@@ -13,6 +13,7 @@ set(LEVELDB_BUILD_BENCHMARKS OFF CACHE BOOL "Build LevelDB benchmarks" FORCE)
 
 # Add LevelDB
 add_subdirectory(${LEVELDB_DIR})
+include_directories(${LEVELDB_DIR})
 include_directories(${LEVELDB_DIR}/include)
 
 set(SOURCE_FILES
